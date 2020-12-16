@@ -14,7 +14,7 @@ with open('stopwords.txt','r') as f:
 documents = list(rawdata['clean_lyric'])
 
 #分词
-texts = [[word for word in document.lower().split() if word not in stopwords] for document in documents]
+texts = [[word for word in jieba.cut(document) if word not in stopwords] for document in documents]
 dictionary = corpora.Dictionary(texts)
 corpus = [dictionary.doc2bow(text) for text in texts]
 
