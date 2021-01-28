@@ -44,7 +44,7 @@ df_3 = df_2.loc[df_2.level_0!=df_2.level_1]#去除自循环
 
 ##看囊括的元素数量占比，来判断哪个threshold是最合适的
 percentage = []
-for i in np.arange(0.2,0.3,0.01):#0.2~0.3是经验值
+for i in np.arange(0.2,0.3,0.01):#0.2~0.3是经验值,可调整
     df_temp = df_3.loc[df_3[0]>i]
     all_element = set(df_temp['level_0']).union(set(df_temp['level_1']))
     percentage.append(len(all_element)/32843)
@@ -73,7 +73,7 @@ for i in part.values():
 #总计聚类数量
 len(reverse_dic.keys())
 
-def print_topic(number,dic,large_corpus,small_corpus): #打印每个聚类下的内容
+def print_topic(number,dic,large_corpus,small_corpus): #打印每个聚类下的内容；之所以分成large_corpus和small_corpus，是可能会对已分好的聚类再次拆分
     corpus_list = set(dic[number])
     word_list = []
     for i in corpus_list:
@@ -100,4 +100,4 @@ def print_topic(number,dic,large_corpus,small_corpus): #打印每个聚类下的
     df_temp['ratio'] = ratios
     df_temp['tf_idf'] = df_temp.apply(lambda x: np.log(x['num']*x['ratio']),axis=1)
     df_temp = df_temp.sort_values('tf_idf',ascending = False)
-    return df_temp.head(5).index.to_list()
+    return df_temp.head(5).index.to_list() #查看前五特殊的词汇
