@@ -4,6 +4,9 @@ from gensim.models.ldamodel import LdaModel
 from gensim.test.utils import datapath
 import pyLDAvis
 import pyLDAvis.gensim
+from itertools import combinations
+from sklearn.metrics.pairwise import cosine_distances
+import seaborn as sn
 
 #分词
 ##有一步是导入中文停止词
