@@ -73,31 +73,29 @@ for i in part.values():
 #总计聚类数量
 len(reverse_dic.keys())
 
-def print_topic(number,dic,large_corpus,small_corpus): #打印每个聚类下的内容；之所以分成large_corpus和small_corpus，是可能会对已分好的聚类再次拆分
-    corpus_list = set(dic[number])
-    word_list = []
+total_word_list = [word for sentence in skincare_corpus for word in sentence]
+df_total_word = pd.DataFrame(pd.value_counts(total_word_list))
+df_total_word.columns = ['num']
+
+ratios = []
+for word in df_total_word.index:
+    a = 0
+    for sentence in skincare_corpus:
+        if word in sentence:
+            a+=1
+    ratios.append(a/len(skincare_corpus))
+df_total_word['ratios'] = ratios
+
+def print_topic(number,dic,large_corpus): #打印每个聚类下的内容；之所以分成large_corpus和small_corpus，是可能会对已分好的聚类再次拆分
+    corpus_list = dic[number]
+    word_list = [] #这一个聚类里
     for i in corpus_list:
         word_list.extend(large_corpus[i])
     df_temp = pd.DataFrame(pd.value_counts(word_list))
-    df_temp.columns=['num']
+    df_temp.columns=['num']        
     
-    ratios = []
-    for word in df_temp.index:
-        a=0
-        for sentence in corpus_list:
-            if word in large_corpus[sentence]:
-                a+=1
-        inter_ratio = a/len(corpus_list)
-        
-        j=0
-        for sentence_i in small_corpus:
-            if word in sentence_i:
-                j+=1
-        outer_ratio = j/len(small_corpus)
-        
-        ratios.append(inter_ratio/outer_ratio)
-    
-    df_temp['ratio'] = ratios
-    df_temp['tf_idf'] = df_temp.apply(lambda x: np.log(x['num']*x['ratio']),axis=1)
+    df_temp['inter_ratio'] = df_temp['num']/len(corpus_list)
+    df_temp['outer_ratio'] = [df_total_word.loc[word,'ratios'] for word in df_temp.index]
+    df_temp['tf_idf'] = df_temp.apply(lambda x: np.log(x['num']*x['inter_ratio']/x['outer_ratio']),axis=1)
     df_temp = df_temp.sort_values('tf_idf',ascending = False)
     return df_temp.head(5).index.to_list() #查看前五特殊的词汇
